@@ -1,0 +1,43 @@
+name: freebsd-build
+
+on: [push, pull_request]
+
+env:
+    MAKEFLAGS: -j3
+
+jobs:
+    build:
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+                build_type: [Debug, Release]
+                c_compiler: [gcc, clang]
+                include:
+                    - name: freebsd-13-gcc
+                      os: ubuntu-latest
+                      c_compiler: gcc
+                      cpp_compiler: g++
+                    - name: freebsd-13-clang
+                      os: ubuntu-latest
+                      c_compiler: clang
+                      cpp_compiler: clang++
+
+        runs-on: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@v4
+            - name: FreeBSD VM Build
+              uses: vmactions/freebsd-vm@v1
+              with:
+                  prepare: |
+                    pkg update
+                    pkg install -y git cmake ninja libxml2 bison flex libserialport avahi doxygen graphviz gtk4 gtk3 wayland libX11 mesa-libs wayland-protocols libXxf86vm libXinerama libXrandr alsa-lib pkgconf
+                  run: |
+                    freebsd-version
+                    cmake -B ${{ github.workspace }}/build
+                    -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+                    -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+                    -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+                    -S ${{ github.workspace }}
+                    cmake --build ${{ github.workspace }}/build --config ${{ matrix.build_type }}
+                    cd ${{ github.workspace }}/build
+                    ctest --build-config ${{ matrix.build_type }}

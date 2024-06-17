@@ -1,0 +1,12 @@
+audio.h                     | audio            | cross-platform audio i/o for old systems/compilers
+cmdline.h                   | parsing          | optimized command line parser
+diff.h                      | utility          | modern diff engine that compiles on old compilers
+display.h                   | graphics         | cross-platform monitor management
+glcontext.h                 | graphics         | cross-platform OpenGL setup
+joystick.h                  | input            | cross-platform joystick/gamepad poller
+mutstr.h                    | utility          | basic string manipulation and comparison
+re.h                        | utility          | PHP-compatible regular expressions for old systems
+server.h                    | internet         | cross-platform server and socket management
+test.h                      | utility          | basic C unit test framework
+uri.h                       | utility          | RFC 3986 compliant URI parser
+utf.h                       | utility          | UTF8<->16<->32 conversion/manipulation
