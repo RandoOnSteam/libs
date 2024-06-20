@@ -1063,7 +1063,7 @@ int regcomp(register regex_t* r,
 			r->nfa = NULL;
 			return REG_NOSTRING;
 		}
-		r->nfa = _T("");
+		r->nfa = (regchar*)_T("");
 		return REG_OK;
 	}
 
@@ -1599,32 +1599,32 @@ int regcomp(register regex_t* r,
 					++se[tagi].fixlen;
 					break;
 				case 'd': /* decimal: [0-9] */
-					sp = _T("[0-9]");
+					sp = (regchar*)_T("[0-9]");
 					storeset(sp);
 					++se[tagi].fixlen;
 					break;
 				case 'D': /* non-decimal: [^0-9] */
-					sp = _T("[^0-9]");
+					sp = (regchar*)_T("[^0-9]");
 					storeset(sp);
 					++se[tagi].fixlen;
 					break;
 				case 's': /* white-space: [ \f\n\r\t\v] */
-					sp = _T("[ \f\n\r\t\v]");
+					sp = (regchar*)_T("[ \f\n\r\t\v]");
 					storeset(sp);
 					++se[tagi].fixlen;
 					break;
 				case 'S': /* non-white-space: [^ \f\n\r\t\v] */
-					sp = _T("[^ \f\n\r\t\v]");
+					sp = (regchar*)_T("[^ \f\n\r\t\v]");
 					storeset(sp);
 					++se[tagi].fixlen;
 					break;
 				case 'w': /* word character: [a-zA-Z_0-9] */
-					sp = _T("[a-zA-Z_0-9]");
+					sp = (regchar*)_T("[a-zA-Z_0-9]");
 					storeset(sp);
 					++se[tagi].fixlen;
 					break;
 				case 'W': /* non-word character: [^a-zA-Z_0-9] */
-					sp = _T("[^a-zA-Z_0-9]");
+					sp = (regchar*)_T("[^a-zA-Z_0-9]");
 					storeset(sp);
 					++se[tagi].fixlen;
 					break;
@@ -2993,11 +2993,12 @@ size_t regsubs(register const regchar *src, register const regchar* expr,
 append a string and an int or char to a buffer and move buffer to end
 */
 #define regsymadd(buf, s, send, chr, ischr) \
-	regsymaddfull(buf, s, strcountof(s), send, strcountof(send), chr, ischr)
+	regsymaddfull(buf, s, strcountof(s), \
+		send, strcountof(send), chr, ischr)
 void regsymaddfull(register regchar** buf,
-			   regchar* s,
+			   const regchar* s,
 			   size_t slen,
-			   register regchar* send,
+			   register const regchar* send,
 			   size_t sendlen,
 			   register int chr,
 			   register int ischr)
@@ -3283,7 +3284,7 @@ void regsymbolic(register const regex_t* r, register regchar** outbuf,
 size_t regerror(register int errcode, register const regex_t* r,
 				register regchar* errbuf, register size_t errbuf_size)
 {
-	regchar* s;
+	const regchar* s;
 	size_t outsize;
 	size_t fulloutsize;
 	size_t patlen;

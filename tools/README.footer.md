@@ -224,6 +224,14 @@ Currently it only outputs to the console.
 
 	#define URI_IMPLEMENTATION before including the header in the one source file you want the implementation in.
 
+WIP
+---
+
+examples/gui.h (examples/guihelloworldc[pp].c[pp])
+
+Experimental weightless GUI framework
+
+
 FAQ
 ---
 

@@ -71,6 +71,13 @@ project ("difffilec" ASM_MASM C CXX)
 project ("difffilecpp" ASM_MASM C CXX)
 project ("diffmemc" ASM_MASM C CXX)
 project ("diffmemcpp" ASM_MASM C CXX)
+if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Darwin")
+	project ("guihelloworldc" ASM_MASM C CXX OBJC OBJCXX)
+	project ("guihelloworldcpp" ASM_MASM C CXX OBJC OBJCXX)
+else ()
+	project ("guihelloworldc" ASM_MASM C CXX)
+	project ("guihelloworldcpp" ASM_MASM C CXX)
+endif ()
 project ("joystickc" ASM_MASM C CXX)
 project ("joystickcpp" ASM_MASM C CXX)
 add_executable(glcontextc "examples/glcontextc.c")
@@ -81,6 +88,8 @@ add_executable(difffilec "examples/difffilec.c")
 add_executable(difffilecpp "examples/difffilecpp.cpp")
 add_executable(diffmemc "examples/diffmemc.c")
 add_executable(diffmemcpp "examples/diffmemcpp.cpp")
+add_executable(guihelloworldc "examples/guihelloworldc.c")
+add_executable(guihelloworldcpp "examples/guihelloworldcpp.cpp")
 add_executable(joystickc "examples/joystickc.c")
 add_executable(joystickcpp "examples/joystickcpp.cpp")
 
@@ -98,41 +107,41 @@ include(CheckIncludeFile) # Check for header existance
 #
 set(archdetect_c_code "
 #if defined(__arm__) || defined(__TARGET_ARCH_ARM)
-    #if defined(__ARM_ARCH_7__) \\
-        || defined(__ARM_ARCH_7A__) \\
-        || defined(__ARM_ARCH_7R__) \\
-        || defined(__ARM_ARCH_7M__) \\
-        || (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 7)
-        #error cmake_ARCH armv7
-    #elif defined(__ARM_ARCH_6__) \\
-        || defined(__ARM_ARCH_6J__) \\
-        || defined(__ARM_ARCH_6T2__) \\
-        || defined(__ARM_ARCH_6Z__) \\
-        || defined(__ARM_ARCH_6K__) \\
-        || defined(__ARM_ARCH_6ZK__) \\
-        || defined(__ARM_ARCH_6M__) \\
-        || (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 6)
-        #error cmake_ARCH armv6
-    #elif defined(__ARM_ARCH_5TEJ__) \\
-        || (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 5)
-        #error cmake_ARCH armv5
-    #else
-        #error cmake_ARCH arm
-    #endif
+	#if defined(__ARM_ARCH_7__) \\
+		|| defined(__ARM_ARCH_7A__) \\
+		|| defined(__ARM_ARCH_7R__) \\
+		|| defined(__ARM_ARCH_7M__) \\
+		|| (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 7)
+		#error cmake_ARCH armv7
+	#elif defined(__ARM_ARCH_6__) \\
+		|| defined(__ARM_ARCH_6J__) \\
+		|| defined(__ARM_ARCH_6T2__) \\
+		|| defined(__ARM_ARCH_6Z__) \\
+		|| defined(__ARM_ARCH_6K__) \\
+		|| defined(__ARM_ARCH_6ZK__) \\
+		|| defined(__ARM_ARCH_6M__) \\
+		|| (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 6)
+		#error cmake_ARCH armv6
+	#elif defined(__ARM_ARCH_5TEJ__) \\
+		|| (defined(__TARGET_ARCH_ARM) && __TARGET_ARCH_ARM-0 >= 5)
+		#error cmake_ARCH armv5
+	#else
+		#error cmake_ARCH arm
+	#endif
 #elif defined(__i386) || defined(__i386__) || defined(_M_IX86)
-    #error cmake_ARCH i386
+	#error cmake_ARCH i386
 #elif defined(__x86_64) || defined(__x86_64__) || defined(__amd64) || defined(_M_X64)
-    #error cmake_ARCH x86_64
+	#error cmake_ARCH x86_64
 #elif defined(__ia64) || defined(__ia64__) || defined(_M_IA64)
-    #error cmake_ARCH ia64
+	#error cmake_ARCH ia64
 #elif defined(__ppc__) || defined(__ppc) || defined(__powerpc__) \\
-      || defined(_ARCH_COM) || defined(_ARCH_PWR) || defined(_ARCH_PPC)  \\
-      || defined(_M_MPPC) || defined(_M_PPC)
-    #if defined(__ppc64__) || defined(__powerpc64__) || defined(__64BIT__)
-        #error cmake_ARCH ppc64
-    #else
-        #error cmake_ARCH ppc
-    #endif
+	  || defined(_ARCH_COM) || defined(_ARCH_PWR) || defined(_ARCH_PPC)  \\
+	  || defined(_M_MPPC) || defined(_M_PPC)
+	#if defined(__ppc64__) || defined(__powerpc64__) || defined(__64BIT__)
+		#error cmake_ARCH ppc64
+	#else
+		#error cmake_ARCH ppc
+	#endif
 #endif
 #error cmake_ARCH unknown
 ")
@@ -140,82 +149,82 @@ set(archdetect_c_code "
 # will be treated as invalid architectures since they are no longer supported by Apple
 set(ppc_support TRUE)
 if(APPLE AND CMAKE_OSX_ARCHITECTURES)
-    # On OS X we use CMAKE_OSX_ARCHITECTURES *if* it was set
-    # First let's normalize the order of the values
+	# On OS X we use CMAKE_OSX_ARCHITECTURES *if* it was set
+	# First let's normalize the order of the values
 
-    # Note that it's not possible to compile PowerPC applications if you are using
-    # the OS X SDK version 10.6 or later - you'll need 10.4/10.5 for that, so we
-    # disable it by default
-    # See this page for more information:
-    # http://stackoverflow.com/questions/5333490/how-can-we-restore-ppc-ppc64-as-well-as-full-10-4-10-5-sdk-support-to-xcode-4
+	# Note that it's not possible to compile PowerPC applications if you are using
+	# the OS X SDK version 10.6 or later - you'll need 10.4/10.5 for that, so we
+	# disable it by default
+	# See this page for more information:
+	# http://stackoverflow.com/questions/5333490/how-can-we-restore-ppc-ppc64-as-well-as-full-10-4-10-5-sdk-support-to-xcode-4
 
-    # Architecture defaults to i386 or ppc on OS X 10.5 and earlier, depending on the CPU type detected at runtime.
-    # On OS X 10.6+ the default is x86_64 if the CPU supports it, i386 otherwise.
+	# Architecture defaults to i386 or ppc on OS X 10.5 and earlier, depending on the CPU type detected at runtime.
+	# On OS X 10.6+ the default is x86_64 if the CPU supports it, i386 otherwise.
 
-    foreach(osx_arch ${CMAKE_OSX_ARCHITECTURES})
-        if("${osx_arch}" STREQUAL "ppc" AND ppc_support)
-            set(osx_arch_ppc TRUE)
-        elseif("${osx_arch}" STREQUAL "i386")
-            set(osx_arch_i386 TRUE)
-        elseif("${osx_arch}" STREQUAL "x86_64")
-            set(osx_arch_x86_64 TRUE)
-        elseif("${osx_arch}" STREQUAL "ppc64" AND ppc_support)
-            set(osx_arch_ppc64 TRUE)
-        else()
-            message(FATAL_ERROR "Invalid OS X arch name: ${osx_arch}")
-        endif()
-    endforeach()
+	foreach(osx_arch ${CMAKE_OSX_ARCHITECTURES})
+		if("${osx_arch}" STREQUAL "ppc" AND ppc_support)
+			set(osx_arch_ppc TRUE)
+		elseif("${osx_arch}" STREQUAL "i386")
+			set(osx_arch_i386 TRUE)
+		elseif("${osx_arch}" STREQUAL "x86_64")
+			set(osx_arch_x86_64 TRUE)
+		elseif("${osx_arch}" STREQUAL "ppc64" AND ppc_support)
+			set(osx_arch_ppc64 TRUE)
+		else()
+			message(FATAL_ERROR "Invalid OS X arch name: ${osx_arch}")
+		endif()
+	endforeach()
 
-    # Now add all the architectures in our normalized order
-    if(osx_arch_ppc)
-        list(APPEND ARCH ppc)
-    endif()
+	# Now add all the architectures in our normalized order
+	if(osx_arch_ppc)
+		list(APPEND ARCH ppc)
+	endif()
 
-    if(osx_arch_i386)
-        list(APPEND ARCH i386)
-    endif()
+	if(osx_arch_i386)
+		list(APPEND ARCH i386)
+	endif()
 
-    if(osx_arch_x86_64)
-        list(APPEND ARCH x86_64)
-    endif()
+	if(osx_arch_x86_64)
+		list(APPEND ARCH x86_64)
+	endif()
 
-    if(osx_arch_ppc64)
-        list(APPEND ARCH ppc64)
-    endif()
+	if(osx_arch_ppc64)
+		list(APPEND ARCH ppc64)
+	endif()
 else()
-    file(WRITE "${CMAKE_BINARY_DIR}/arch.c" "${archdetect_c_code}")
+	file(WRITE "${CMAKE_BINARY_DIR}/arch.c" "${archdetect_c_code}")
 
-    enable_language(C)
+	enable_language(C)
 
-    # Detect the architecture in a rather creative way...
-    # This compiles a small C program which is a series of ifdefs that selects a
-    # particular #error preprocessor directive whose message string contains the
-    # target architecture. The program will always fail to compile (both because
-    # file is not a valid C program, and obviously because of the presence of the
-    # #error preprocessor directives... but by exploiting the preprocessor in this
-    # way, we can detect the correct target architecture even when cross-compiling,
-    # since the program itself never needs to be run (only the compiler/preprocessor)
-    try_run(
-        run_result_unused
-        compile_result_unused
-        "${CMAKE_BINARY_DIR}"
-        "${CMAKE_BINARY_DIR}/arch.c"
-        COMPILE_OUTPUT_VARIABLE ARCH
-        CMAKE_FLAGS CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
-    )
+	# Detect the architecture in a rather creative way...
+	# This compiles a small C program which is a series of ifdefs that selects a
+	# particular #error preprocessor directive whose message string contains the
+	# target architecture. The program will always fail to compile (both because
+	# file is not a valid C program, and obviously because of the presence of the
+	# #error preprocessor directives... but by exploiting the preprocessor in this
+	# way, we can detect the correct target architecture even when cross-compiling,
+	# since the program itself never needs to be run (only the compiler/preprocessor)
+	try_run(
+		run_result_unused
+		compile_result_unused
+		"${CMAKE_BINARY_DIR}"
+		"${CMAKE_BINARY_DIR}/arch.c"
+		COMPILE_OUTPUT_VARIABLE ARCH
+		CMAKE_FLAGS CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+	)
 
-    # Parse the architecture name from the compiler output
-    string(REGEX MATCH "cmake_ARCH ([a-zA-Z0-9_]+)" ARCH "${ARCH}")
+	# Parse the architecture name from the compiler output
+	string(REGEX MATCH "cmake_ARCH ([a-zA-Z0-9_]+)" ARCH "${ARCH}")
 
-    # Get rid of the value marker leaving just the architecture name
-    string(REPLACE "cmake_ARCH " "" ARCH "${ARCH}")
+	# Get rid of the value marker leaving just the architecture name
+	string(REPLACE "cmake_ARCH " "" ARCH "${ARCH}")
 
-    # If we are compiling with an unknown architecture this variable should
-    # already be set to "unknown" but in the case that it's empty (i.e. due
-    # to a typo in the code), then set it to unknown
-    if (NOT ARCH)
-        set(ARCH unknown)
-    endif()
+	# If we are compiling with an unknown architecture this variable should
+	# already be set to "unknown" but in the case that it's empty (i.e. due
+	# to a typo in the code), then set it to unknown
+	if (NOT ARCH)
+		set(ARCH unknown)
+	endif()
 endif()
 #
 #
@@ -226,19 +235,19 @@ endif()
 # The built-in functionality for compiler flag support in CMake
 # is garbage. clang just outputs a warning, so check for both w/errors
 function(check_compiler_flag_withwarnings flag var)
-    file(WRITE "${CMAKE_BINARY_DIR}/arch.c" "int main() { return 0; }")
-    enable_language(C)
+	file(WRITE "${CMAKE_BINARY_DIR}/arch.c" "int main() { return 0; }")
+	enable_language(C)
 	#file(REMOVE "${CMAKE_BINARY_DIR}/arch.c" "${compiler_output_file}")
-    try_run(
-        run_result_unused
-        compile_result_unused
-        "${CMAKE_BINARY_DIR}"
-        "${CMAKE_BINARY_DIR}/arch.c"
-        COMPILE_OUTPUT_VARIABLE FLAGCHECK
-        COMPILE_DEFINITIONS "${flag}"
-    )
+	try_run(
+		run_result_unused
+		compile_result_unused
+		"${CMAKE_BINARY_DIR}"
+		"${CMAKE_BINARY_DIR}/arch.c"
+		COMPILE_OUTPUT_VARIABLE FLAGCHECK
+		COMPILE_DEFINITIONS "${flag}"
+	)
 
-    if(NOT ${FLAGCHECK} MATCHES "error" AND NOT ${FLAGCHECK} MATCHES "warning")
+	if(NOT ${FLAGCHECK} MATCHES "error" AND NOT ${FLAGCHECK} MATCHES "warning")
 		#message(STATUS "--------------------FLAG:${flag} SUCCESS: ${FLAGCHECK}----------------")
 		set(${var} TRUE PARENT_SCOPE)
 	else()
@@ -441,6 +450,13 @@ if (NOT AMIGAGCCOPT AND NOT X68000OPT AND NOT CMAKE_HOST_SYSTEM_NAME MATCHES "Wi
 			target_link_libraries(diffmemcpp ${EXTRALIBS})
 			target_compile_options(diffmemcpp PUBLIC ${EXTRACFLAGS})
 
+			target_include_directories(guihelloworldc PUBLIC ${EXTRAINCLUDES})
+			target_link_libraries(guihelloworldc ${EXTRALIBS})
+			target_compile_options(guihelloworldc PUBLIC ${EXTRACFLAGS})
+			target_include_directories(guihelloworldcpp PUBLIC ${EXTRAINCLUDES})
+			target_link_libraries(guihelloworldcpp ${EXTRALIBS})
+			target_compile_options(guihelloworldcpp PUBLIC ${EXTRACFLAGS})
+
 			target_include_directories(joystickc PUBLIC ${EXTRAINCLUDES})
 			target_link_libraries(joystickc ${EXTRALIBS})
 			target_compile_options(joystickc PUBLIC ${EXTRACFLAGS})
@@ -462,6 +478,8 @@ if (NOT AMIGAGCCOPT AND NOT X68000OPT AND NOT CMAKE_HOST_SYSTEM_NAME MATCHES "Wi
 			target_link_libraries(difffilecpp "-L/usr/local/lib -R/usr/local/lib")
 			target_link_libraries(diffmemc "-L/usr/local/lib -R/usr/local/lib")
 			target_link_libraries(diffmemcpp "-L/usr/local/lib -R/usr/local/lib")
+			target_link_libraries(guihelloworldc "-L/usr/local/lib -R/usr/local/lib")
+			target_link_libraries(guihelloworldcpp "-L/usr/local/lib -R/usr/local/lib")
 			target_link_libraries(joystickc "-L/usr/local/lib -R/usr/local/lib")
 			target_link_libraries(joystickcpp "-L/usr/local/lib -R/usr/local/lib")
 			if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "FreeBSD")
@@ -485,11 +503,14 @@ if (NOT AMIGAGCCOPT AND NOT X68000OPT AND NOT CMAKE_HOST_SYSTEM_NAME MATCHES "Wi
 		find_library(IOKIT_LIBRARY IOKit)
 		find_library(COREGRAPHICS_LIBRARY CoreGraphics)
 		find_library(COREFOUNDATION_LIBRARY CoreFoundation)
+		find_library(COCOA_LIBRARY Cocoa)
 		if(OPENGL_LIBRARY)
 			target_link_libraries(glcontextc ${AGL_LIBRARY} ${OPENGL_LIBRARY})
 			target_link_libraries(glcontextcpp ${AGL_LIBRARY} ${OPENGL_LIBRARY})
 			target_link_libraries(displayc ${IOKIT_LIBRARY} ${COREGRAPHICS_LIBRARY} ${COREFOUNDATION_LIBRARY})
 			target_link_libraries(displaycpp ${IOKIT_LIBRARY} ${COREGRAPHICS_LIBRARY} ${COREFOUNDATION_LIBRARY})
+			target_link_libraries(guihelloworldc ${COCOA_LIBRARY} ${COREGRAPHICS_LIBRARY} ${COREFOUNDATION_LIBRARY})
+			target_link_libraries(guihelloworldcpp ${COCOA_LIBRARY} ${COREGRAPHICS_LIBRARY} ${COREFOUNDATION_LIBRARY})
 			target_link_libraries(joystickc ${IOKIT_LIBRARY} ${COREGRAPHICS_LIBRARY} ${COREFOUNDATION_LIBRARY})
 			target_link_libraries(joystickcpp ${IOKIT_LIBRARY} ${COREGRAPHICS_LIBRARY} ${COREFOUNDATION_LIBRARY})
 
@@ -527,7 +548,11 @@ set_target_properties(difffilecpp PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 set_target_properties(diffmemcpp PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
-	set_target_properties(joystickc PROPERTIES
+set_target_properties(guihelloworldc PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
+set_target_properties(guihelloworldcpp PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
+set_target_properties(joystickc PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
 set_target_properties(joystickcpp PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}")
@@ -546,7 +571,19 @@ target_include_directories(difffilec PRIVATE ${EXTRAINCLUDES})
 target_include_directories(difffilecpp PRIVATE ${EXTRAINCLUDES})
 target_include_directories(diffmemc PRIVATE ${EXTRAINCLUDES})
 target_include_directories(diffmemcpp PRIVATE ${EXTRAINCLUDES})
+target_include_directories(guihelloworldc PRIVATE ${EXTRAINCLUDES})
+target_include_directories(guihelloworldcpp PRIVATE ${EXTRAINCLUDES})
 target_include_directories(joystickc PRIVATE ${EXTRAINCLUDES})
 target_include_directories(joystickcpp PRIVATE ${EXTRAINCLUDES})
+
+#
+# Compile GUI example as objective C/C++ on OS X
+#
+if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Darwin")
+	set_source_files_properties("examples/guihelloworldc.c"
+		PROPERTIES LANGUAGE OBJC)
+	set_source_files_properties("examples/guihelloworldcpp.cpp"
+		PROPERTIES LANGUAGE OBJCXX)
+endif()
 
 set(CMAKE_SUPPRESS_REGENERATION ON)
